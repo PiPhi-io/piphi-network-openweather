@@ -1,0 +1,11 @@
+{
+  "id": "openweather-new-york",
+  "host": "api.openweathermap.org",
+  "alias": "New York Weather",
+  "api_key": "change-me",
+  "latitude": 40.7128,
+  "longitude": -74.006,
+  "units": "metric",
+  "language": "en",
+  "poll_interval_seconds": 600
+}

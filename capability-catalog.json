@@ -1,0 +1,286 @@
+{
+  "catalog_version": "1.0",
+  "integration_id": "piphi-network-openweather",
+  "coverage_mode": "upstream-surface-accounted-runtime-advertising-gated-by-implementation",
+  "reviewed_at": "2026-09-09",
+  "sources": {
+    "openweather_one_call": "https://openweathermap.org/api/one-call-3",
+    "openweather_air_pollution": "https://openweathermap.org/api/air-pollution",
+    "openweather_geocoding": "https://openweathermap.org/api/geocoding-api",
+    "homey_reference": "https://homey.app/en-us/app/nu.baretta.openweathermap/OpenWeather/",
+    "core_vocabulary": "PiPhi Network Core capability and behavior contracts"
+  },
+  "groups": [
+    {
+      "id": "runtime-foundation",
+      "status": "implemented",
+      "scope": [
+        "all-configurations"
+      ],
+      "source_refs": [
+        "core_vocabulary"
+      ],
+      "reason": "The scaffold implements configuration lifecycle, connectivity state, refresh dispatch, and a configuration event.",
+      "state": [
+        "connected"
+      ],
+      "events": [
+        "runtime.config.applied"
+      ],
+      "conditions": [
+        "state_matches"
+      ],
+      "actions": [
+        "refresh"
+      ]
+    },
+    {
+      "id": "location-and-current-conditions",
+      "status": "planned",
+      "scope": [
+        "configured-locations"
+      ],
+      "source_refs": [
+        "openweather_one_call",
+        "openweather_geocoding",
+        "homey_reference"
+      ],
+      "reason": "Location identity, timezone, current conditions, freshness, and localization require typed upstream fixtures.",
+      "state": [
+        "location_name",
+        "latitude",
+        "longitude",
+        "timezone",
+        "observed_at",
+        "temperature_c",
+        "feels_like_c",
+        "pressure_hpa",
+        "humidity_percent",
+        "dew_point_c",
+        "uvi",
+        "cloud_cover_percent",
+        "visibility_m",
+        "wind_speed_mps",
+        "wind_gust_mps",
+        "wind_direction_deg",
+        "weather_code",
+        "weather_main",
+        "weather_description",
+        "sunrise_at",
+        "sunset_at",
+        "rain_1h_mm",
+        "snow_1h_mm"
+      ],
+      "events": [
+        "weather.condition_changed",
+        "weather.precipitation_changed",
+        "weather.wind_changed"
+      ],
+      "conditions": [
+        "temperature_above",
+        "temperature_below",
+        "humidity_above",
+        "uvi_above",
+        "condition_is",
+        "precipitation_active"
+      ],
+      "actions": []
+    },
+    {
+      "id": "minutely-and-hourly-forecast",
+      "status": "planned",
+      "scope": [
+        "one-call-enabled-locations"
+      ],
+      "source_refs": [
+        "openweather_one_call",
+        "homey_reference"
+      ],
+      "reason": "Minutely precipitation and 48-hour forecasts need bounded series normalization and forecast-revision deduplication.",
+      "state": [
+        "minutely_precipitation",
+        "hourly_forecast",
+        "next_hour_precipitation_mm",
+        "next_hour_precipitation_probability",
+        "forecast_temperature_1h_c",
+        "forecast_feels_like_1h_c",
+        "forecast_pressure_1h_hpa",
+        "forecast_humidity_1h_percent",
+        "forecast_uvi_1h",
+        "forecast_cloud_cover_1h_percent",
+        "forecast_visibility_1h_m",
+        "forecast_wind_speed_1h_mps"
+      ],
+      "events": [
+        "forecast.hourly_changed",
+        "forecast.precipitation_starting",
+        "forecast.precipitation_ending"
+      ],
+      "conditions": [
+        "rain_expected_within",
+        "snow_expected_within",
+        "forecast_temperature_above"
+      ],
+      "actions": []
+    },
+    {
+      "id": "daily-forecast-and-astronomy",
+      "status": "planned",
+      "scope": [
+        "one-call-enabled-locations"
+      ],
+      "source_refs": [
+        "openweather_one_call",
+        "homey_reference"
+      ],
+      "reason": "Eight-day forecasts and astronomical fields need date/timezone-safe normalization.",
+      "state": [
+        "daily_forecast",
+        "daily_summary",
+        "daily_min_temperature_c",
+        "daily_max_temperature_c",
+        "daily_morning_temperature_c",
+        "daily_day_temperature_c",
+        "daily_evening_temperature_c",
+        "daily_night_temperature_c",
+        "daily_precipitation_probability",
+        "daily_rain_mm",
+        "daily_snow_mm",
+        "moonrise_at",
+        "moonset_at",
+        "moon_phase"
+      ],
+      "events": [
+        "forecast.daily_changed",
+        "forecast.summary_changed"
+      ],
+      "conditions": [
+        "daily_high_above",
+        "daily_low_below",
+        "daily_precipitation_probability_above"
+      ],
+      "actions": []
+    },
+    {
+      "id": "government-alerts",
+      "status": "planned",
+      "scope": [
+        "locations-with-alert-coverage"
+      ],
+      "source_refs": [
+        "openweather_one_call",
+        "homey_reference"
+      ],
+      "reason": "Government alerts require stable identities, severity mapping, update/cancel transitions, and alert-source provenance.",
+      "state": [
+        "active_alert_count",
+        "alert_event",
+        "alert_sender",
+        "alert_start_at",
+        "alert_end_at",
+        "alert_description",
+        "alert_tags"
+      ],
+      "events": [
+        "weather.alert_started",
+        "weather.alert_updated",
+        "weather.alert_ended"
+      ],
+      "conditions": [
+        "weather_alert_active",
+        "weather_alert_tag_is"
+      ],
+      "actions": []
+    },
+    {
+      "id": "air-quality",
+      "status": "planned",
+      "scope": [
+        "air-pollution-api-enabled-locations"
+      ],
+      "source_refs": [
+        "openweather_air_pollution",
+        "homey_reference"
+      ],
+      "reason": "Current, forecast, and historical air-pollution series require unit normalization and health-category mapping.",
+      "state": [
+        "air_quality_index",
+        "co_ug_m3",
+        "no_ug_m3",
+        "no2_ug_m3",
+        "o3_ug_m3",
+        "so2_ug_m3",
+        "pm2_5_ug_m3",
+        "pm10_ug_m3",
+        "nh3_ug_m3",
+        "air_quality_forecast"
+      ],
+      "events": [
+        "air_quality.changed",
+        "air_quality.degraded",
+        "air_quality.recovered"
+      ],
+      "conditions": [
+        "air_quality_at_least",
+        "pm2_5_above",
+        "pm10_above"
+      ],
+      "actions": []
+    },
+    {
+      "id": "history-summary-and-operations",
+      "status": "planned",
+      "scope": [
+        "subscription-permitted-endpoints"
+      ],
+      "source_refs": [
+        "openweather_one_call"
+      ],
+      "reason": "Historical weather, daily aggregation, AI overview, rate limits, latency, retries, and quota state need subscription-aware negotiation.",
+      "state": [
+        "historical_weather",
+        "daily_aggregation",
+        "weather_overview",
+        "api_latency_ms",
+        "api_calls_remaining",
+        "api_quota_resets_at",
+        "last_success_at",
+        "last_error_code"
+      ],
+      "events": [
+        "api.rate_limited",
+        "api.recovered",
+        "weather.data_stale"
+      ],
+      "conditions": [
+        "weather_data_is_stale",
+        "api_quota_below"
+      ],
+      "actions": [
+        "refresh_forecast"
+      ]
+    },
+    {
+      "id": "unsafe-or-sensitive-surface",
+      "status": "excluded",
+      "scope": [
+        "all-configurations"
+      ],
+      "source_refs": [
+        "openweather_one_call"
+      ],
+      "reason": "API keys, arbitrary upstream URLs, unbounded history requests, and raw upstream payloads must not be exposed.",
+      "state": [
+        "api_key",
+        "raw_upstream_payload"
+      ],
+      "events": [],
+      "conditions": [],
+      "actions": [
+        "set_api_key",
+        "request_unbounded_history",
+        "request_arbitrary_url"
+      ]
+    }
+  ]
+}
